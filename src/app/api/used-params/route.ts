@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { kv } from '@vercel/kv';
+import { getRedisClient } from '@/lib/redis';
 
 // Parameter storage with metadata
 interface ParameterData {
@@ -17,14 +17,19 @@ function generateFhfh(): string {
 // Clean up expired parameters
 async function cleanupExpiredParameters(): Promise<void> {
   try {
+    const redis = await getRedisClient();
+    
     // Get all parameter keys
-    const keys = await kv.keys('param:*');
+    const keys = await redis.keys('param:*');
     const now = Date.now();
     
     for (const key of keys) {
-      const data = await kv.get<ParameterData>(key);
-      if (data && now > data.expiresAt) {
-        await kv.del(key);
+      const data = await redis.get(key);
+      if (data) {
+        const parameter: ParameterData = JSON.parse(data);
+        if (now > parameter.expiresAt) {
+          await redis.del(key);
+        }
       }
     }
   } catch (error) {
@@ -35,6 +40,7 @@ async function cleanupExpiredParameters(): Promise<void> {
 export async function POST(request: NextRequest) {
   try {
     const { fhfh, stripeSessionId, action, paymentCompleted } = await request.json();
+    const redis = await getRedisClient();
     
     // Clean up expired parameters first
     await cleanupExpiredParameters();
@@ -57,8 +63,8 @@ export async function POST(request: NextRequest) {
         isCompleted: false
       };
       
-      // Store in KV with TTL
-      await kv.set(`param:${newFhfh}`, parameterData, { ex: 1800 }); // 30 minutes TTL
+      // Store in Redis with TTL
+      await redis.setEx(`param:${newFhfh}`, 1800, JSON.stringify(parameterData)); // 30 minutes TTL
       
       return NextResponse.json({ 
         fhfh: newFhfh,
@@ -73,17 +79,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Missing fhfh or stripeSessionId" }, { status: 400 });
       }
       
-      const parameter = await kv.get<ParameterData>(`param:${fhfh}`);
-      
-      if (!parameter) {
+      const data = await redis.get(`param:${fhfh}`);
+      if (!data) {
         return NextResponse.json({ error: "Parameter not found" }, { status: 404 });
       }
+      
+      const parameter: ParameterData = JSON.parse(data);
       
       // Update the session ID
       parameter.stripeSessionId = stripeSessionId;
       
-      // Update in KV
-      await kv.set(`param:${fhfh}`, parameter, { ex: 1800 });
+      // Update in Redis
+      await redis.setEx(`param:${fhfh}`, 1800, JSON.stringify(parameter));
       
       return NextResponse.json({ 
         message: "Session ID updated successfully"
@@ -96,15 +103,16 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Missing fhfh parameter" }, { status: 400 });
       }
       
-      const parameter = await kv.get<ParameterData>(`param:${fhfh}`);
-      
-      if (!parameter) {
+      const data = await redis.get(`param:${fhfh}`);
+      if (!data) {
         return NextResponse.json({ 
           error: "Parameter not found or expired",
           isUsed: false,
           isExpired: true
         }, { status: 404 });
       }
+      
+      const parameter: ParameterData = JSON.parse(data);
       
       if (parameter.isCompleted) {
         return NextResponse.json({ 
@@ -126,8 +134,8 @@ export async function POST(request: NextRequest) {
       parameter.isCompleted = true;
       parameter.expiresAt = Date.now(); // Expire immediately
       
-      // Update in KV with immediate expiration
-      await kv.set(`param:${fhfh}`, parameter, { ex: 1 }); // 1 second TTL
+      // Update in Redis with immediate expiration
+      await redis.setEx(`param:${fhfh}`, 1, JSON.stringify(parameter)); // 1 second TTL
       
       return NextResponse.json({ 
         isUsed: false,
@@ -142,9 +150,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Missing fhfh parameter" }, { status: 400 });
       }
       
-      const parameter = await kv.get<ParameterData>(`param:${fhfh}`);
-      
-      if (!parameter) {
+      const data = await redis.get(`param:${fhfh}`);
+      if (!data) {
         return NextResponse.json({ 
           error: "Parameter not found or expired",
           isUsed: false,
@@ -152,11 +159,13 @@ export async function POST(request: NextRequest) {
         }, { status: 404 });
       }
       
+      const parameter: ParameterData = JSON.parse(data);
+      
       // Expire immediately
       parameter.expiresAt = Date.now();
       
-      // Update in KV with immediate expiration
-      await kv.set(`param:${fhfh}`, parameter, { ex: 1 }); // 1 second TTL
+      // Update in Redis with immediate expiration
+      await redis.setEx(`param:${fhfh}`, 1, JSON.stringify(parameter)); // 1 second TTL
       
       return NextResponse.json({ 
         message: "Parameter expired successfully"
@@ -179,12 +188,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing fhfh parameter" }, { status: 400 });
     }
     
+    const redis = await getRedisClient();
+    
     // Clean up expired parameters first
     await cleanupExpiredParameters();
     
-    const parameter = await kv.get<ParameterData>(`param:${fhfh}`);
+    const data = await redis.get(`param:${fhfh}`);
     
-    if (!parameter) {
+    if (!data) {
       return NextResponse.json({ 
         isUsed: false,
         isExpired: true,
@@ -193,6 +204,7 @@ export async function GET(request: NextRequest) {
       });
     }
     
+    const parameter: ParameterData = JSON.parse(data);
     const now = Date.now();
     const isExpired = now > parameter.expiresAt;
     
@@ -215,19 +227,20 @@ export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const fhfh = searchParams.get("fhfh");
+    const redis = await getRedisClient();
     
     if (fhfh) {
       // Remove specific parameter
-      const deleted = await kv.del(`param:${fhfh}`);
+      const deleted = await redis.del(`param:${fhfh}`);
       
       return NextResponse.json({ 
         message: deleted ? "Parameter reset successfully" : "Parameter not found"
       });
     } else {
       // Clear all parameters
-      const keys = await kv.keys('param:*');
+      const keys = await redis.keys('param:*');
       if (keys.length > 0) {
-        await kv.del(...keys);
+        await redis.del(keys);
       }
       
       return NextResponse.json({ message: "All parameters reset successfully" });
