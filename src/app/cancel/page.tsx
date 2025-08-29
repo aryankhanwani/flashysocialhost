@@ -56,7 +56,7 @@ export default function CancelPage() {
         </p>
         {isRedirecting && (
           <button 
-            onClick={() => window.location.href = 'http://localhost:3001'}
+            onClick={() => window.location.href = 'http://flashysocialhost.vercel.app'}
             className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Return to Main Site
