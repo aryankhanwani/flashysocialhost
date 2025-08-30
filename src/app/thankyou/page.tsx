@@ -64,7 +64,7 @@ export default function ThankYouPage() {
         
         // Redirect to localhost:3000 (main project)
         setTimeout(() => {
-          window.location.href = `http://flashysocial.vercel.app/dashboard?order_result=completed&fhfh=${fhfh}`;
+          window.location.href = `http://flashysocial.com/dashboard?order_result=completed&fhfh=${fhfh}`;
         }, 2000);
 
       } catch (error) {
