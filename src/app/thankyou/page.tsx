@@ -64,7 +64,7 @@ export default function ThankYouPage() {
         
         // Redirect to localhost:3000 (main project)
         setTimeout(() => {
-          window.location.href = `http://flashysocial.vercel.app/dashboard?order_result=completed&fhfh=${fhfh}`;
+          window.location.href = `http://localhost:3000/dashboard?order_result=completed&fhfh=${fhfh}`;
         }, 2000);
 
       } catch (error) {
@@ -112,7 +112,7 @@ export default function ThankYouPage() {
             <h1 className="text-xl font-semibold text-yellow-600">Already Processed</h1>
             <p className="mt-2 text-gray-600">{message}</p>
             <button 
-              onClick={() => window.location.href = 'http://flashysocialhost.vercel.app'}
+              onClick={() => window.location.href = 'http://flashysocialhosts.com/'}
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Go to Main Site
@@ -131,7 +131,7 @@ export default function ThankYouPage() {
             <h1 className="text-xl font-semibold text-red-600">Error</h1>
             <p className="mt-2 text-gray-600">{message}</p>
             <button 
-              onClick={() => window.location.href = 'http://flashysocialhost.vercel.app/'}
+              onClick={() => window.location.href = 'http://flashysocialhosts.com/'}
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Go to Main Site
