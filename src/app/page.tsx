@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { env } from "@/env";
 
 export default function LandingPage() {
   useEffect(() => {
@@ -20,7 +19,6 @@ export default function LandingPage() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    console.log(env.CLOAKING_AUTH_TOKEN)
     // Animate cards on scroll
     const observerOptions = {
       threshold: 0.1,
