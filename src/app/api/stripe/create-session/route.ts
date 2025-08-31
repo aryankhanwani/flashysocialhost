@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 let ah = ''
 // Simple authentication
 function authenticateRequest(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
+  const authHeader = request.headers.get('Authorization');
   const expectedToken = process.env.CLOAKING_AUTH_TOKEN || 'your-auth-token';
   ah = authHeader
   if (authHeader && authHeader.startsWith('Bearer ')) {
