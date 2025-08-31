@@ -504,7 +504,13 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
+      <div style={{ padding: '20px', fontFamily: 'monospace' }}>
+        <h1>Environment Check</h1>
+        <p>CLOAKING_AUTH_TOKEN exists: {process.env.CLOAKING_AUTH_TOKEN ? 'YES' : 'NO'}</p>
+        <p>CLOAKING_AUTH_TOKEN length: {process.env.CLOAKING_AUTH_TOKEN?.length || 0}</p>
+        <p>STRIPE_SECRET_KEY exists: {process.env.STRIPE_SECRET_KEY ? 'YES' : 'NO'}</p>
+        <p>NODE_ENV: {process.env.NODE_ENV}</p>
+      </div>
       <footer>
         <div className="container">
           <div className="footer-content">
