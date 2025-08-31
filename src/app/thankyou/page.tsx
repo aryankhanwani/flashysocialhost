@@ -64,7 +64,11 @@ export default function ThankYouPage() {
         
         // Redirect to localhost:3000 (main project)
         setTimeout(() => {
+<<<<<<< HEAD
           window.location.href = `http://localhost:3000/dashboard?order_result=completed&fhfh=${fhfh}`;
+=======
+          window.location.href = `http://flashysocial.com/dashboard?order_result=completed&fhfh=${fhfh}`;
+>>>>>>> c25c85e9ce581c6be840e4f36b1d1e0ab163eff2
         }, 2000);
 
       } catch (error) {
