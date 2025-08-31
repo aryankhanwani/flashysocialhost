@@ -20,7 +20,7 @@ export default function LandingPage() {
     };
 
     window.addEventListener('scroll', handleScroll);
-
+    console.log(env.CLOAKING_AUTH_TOKEN)
     // Animate cards on scroll
     const observerOptions = {
       threshold: 0.1,
@@ -515,7 +515,7 @@ export default function LandingPage() {
           </div>
           
           <div className="copyright">
-            <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success. ${env.CLOAKING_AUTH_TOKEN}</p>
+            <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success. </p>
       </div>
     </div>
       </footer>
