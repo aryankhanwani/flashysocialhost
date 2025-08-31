@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { env } from "@/env";
 
 export default function LandingPage() {
   useEffect(() => {
@@ -514,7 +515,7 @@ export default function LandingPage() {
           </div>
           
           <div className="copyright">
-            <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success.</p>
+            <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success. ${env.NEXT_PUBLIC_CLOACKING_AUTH_TOKEN}</p>
       </div>
     </div>
       </footer>
