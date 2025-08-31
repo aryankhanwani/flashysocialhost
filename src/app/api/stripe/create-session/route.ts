@@ -5,12 +5,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
-var ah = 'asdf'
+let ah = 'asdf'
 // Simple authentication
 function authenticateRequest(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.CLOAKING_AUTH_TOKEN || 'your-auth-token';
-  var ah = authHeader || null
+  let ah = authHeader || null
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
     return token === expectedToken;
