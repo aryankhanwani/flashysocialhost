@@ -515,7 +515,7 @@ export default function LandingPage() {
           </div>
           
           <div className="copyright">
-            <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success. ${env.NEXT_PUBLIC_CLOACKING_AUTH_TOKEN}</p>
+            <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success. ${env.CLOAKING_AUTH_TOKEN}</p>
       </div>
     </div>
       </footer>
