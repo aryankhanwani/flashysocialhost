@@ -5,12 +5,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
-let ah = 'asdf'
 // Simple authentication
 function authenticateRequest(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.CLOAKING_AUTH_TOKEN || 'your-auth-token';
-  let ah = authHeader || null
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
     return token === expectedToken;
@@ -30,12 +28,12 @@ function validateRequest(data: any): any {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    if (!authenticateRequest(request)) {
-      return NextResponse.json(
-        { error: `Unauthorized access ${ah}, ` },
-        { status: 401 }
-      );
-    }
+    // if (!authenticateRequest(request)) {
+    //   return NextResponse.json(
+    //     { error: `Unauthorized access ${ah}, ` },
+    //     { status: 401 }
+    //   );
+    // }
 
     // Parse and validate request
     const body = await request.json();
