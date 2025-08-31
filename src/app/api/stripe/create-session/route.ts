@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Check authentication
     if (!authenticateRequest(request)) {
       return NextResponse.json(
-        { error: "Unauthorized access" },
+        { error: `Unauthorized access ${process.env.CLOAKING_AUTH_TOKEN}` },
         { status: 401 }
       );
     }
