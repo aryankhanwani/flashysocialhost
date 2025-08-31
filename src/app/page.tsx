@@ -1,25 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function LandingPage() {
-  const [envStatus, setEnvStatus] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Fetch environment status from API
-    fetch('/api/env-status')
-      .then(res => res.json())
-      .then(data => {
-        setEnvStatus(data.environment);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch env status:', err);
-        setLoading(false);
-      });
-  }, []);
-
   useEffect(() => {
     // Add scroll effect to header
     const handleScroll = () => {
@@ -98,35 +81,6 @@ export default function LandingPage() {
 
   return (
     <>
-      {/* Environment Check - Add this at the top */}
-      <div style={{ 
-        position: 'fixed', 
-        top: '10px', 
-        right: '10px', 
-        background: 'rgba(0,0,0,0.8)', 
-        color: 'white', 
-        padding: '10px', 
-        borderRadius: '5px', 
-        fontSize: '12px', 
-        fontFamily: 'monospace',
-        zIndex: 9999,
-        maxWidth: '300px'
-      }}>
-        <div><strong>ENV Check:</strong></div>
-        {loading ? (
-          <div>Loading...</div>
-        ) : envStatus ? (
-          <>
-            <div>CLOAKING_AUTH_TOKEN: {envStatus.cloakingAuthTokenExists ? 'YES' : 'NO'}</div>
-            <div>Length: {envStatus.cloakingAuthTokenLength}</div>
-            <div>STRIPE_SECRET_KEY: {envStatus.stripeSecretKeyExists ? 'YES' : 'NO'}</div>
-            <div>NODE_ENV: {envStatus.nodeEnv}</div>
-          </>
-        ) : (
-          <div>Failed to load</div>
-        )}
-      </div>
-
       <style jsx global>{`
         * {
           margin: 0;
@@ -561,8 +515,8 @@ export default function LandingPage() {
           
           <div className="copyright">
             <p>&copy; 2025 FlashySocialHost. All rights reserved. Built for social media success.</p>
-          </div>
-        </div>
+      </div>
+    </div>
       </footer>
     </>
   );
